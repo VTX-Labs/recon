@@ -1,0 +1,63 @@
+{
+  "name": "@vtx-labs/recon",
+  "version": "0.2.0",
+  "description": "Secret intelligence for authorized engagements — find a key, then prove what it can actually do. Read-only capability ladders, gated by construction, with a redacted evidence bundle.",
+  "keywords": [
+    "security",
+    "secrets",
+    "secret-scanning",
+    "bug-bounty",
+    "capability-ladder",
+    "trufflehog",
+    "credential",
+    "redaction",
+    "cli",
+    "vtx-labs"
+  ],
+  "homepage": "https://github.com/VTX-Labs/recon#readme",
+  "bugs": "https://github.com/VTX-Labs/recon/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VTX-Labs/recon.git"
+  },
+  "license": "MIT",
+  "author": "VTX Labs (https://vtxlabs.dev)",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "vtx-recon": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsx src/cli.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "docs": "typedoc",
+    "prepublishOnly": "pnpm typecheck && pnpm test && pnpm build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "typedoc": "^0.28.0",
+    "typedoc-material-theme": "^1.4.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "packageManager": "pnpm@10.6.5"
+}

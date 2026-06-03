@@ -1,0 +1,140 @@
+"""The orchestration layer the CLI calls:
+
+    Finding -> ladder_finding() -> LadderResult -> build_bundle() -> EvidenceBundle
+
+Provider ladders (registered in the registry) do the real probing; this module
+routes a finding to its ladder, handles the "no ladder for this provider" case,
+and assembles + renders the evidence bundle. It performs no network I/O of its
+own.
+"""
+
+from __future__ import annotations
+
+import time
+
+from .detect import detect_key
+from .models import EvidenceBundle, Finding, LadderResult, ProbeTier, Verdict
+from .providers import get_ladder
+
+__all__ = [
+    "build_bundle",
+    "finding_from_key",
+    "ladder_finding",
+    "render_bundle_markdown",
+    "render_ladder_text",
+]
+
+
+async def ladder_finding(finding: Finding, consent) -> LadderResult:
+    """Run the capability ladder for a single finding.
+
+    Routes by the finding's ``detector_name``. If no ladder is registered for
+    the provider, returns an ``N/A`` LadderResult (never raises for that reason)
+    so a mixed batch still produces a complete bundle. A ``ScopeRequired`` raised
+    by a ladder (laddering with no authorized scope) propagates to the caller,
+    which maps it to the documented exit code.
+    """
+    ladder = get_ladder(finding.detector_name)
+    if ladder is None:
+        return LadderResult(
+            finding=finding,
+            provider=finding.detector_name or "unknown",
+            verdict=Verdict.NA,
+            authorized_scope=consent.authorized_scope or "",
+        )
+    return await ladder(finding, consent)
+
+
+def finding_from_key(key: str, detector_override: str | None = None) -> Finding:
+    """Build a Finding from a bare ``--key``, inferring its detector by shape.
+
+    ``detector_override`` (from ``--detector``) wins over auto-detection.
+    """
+    detector = (detector_override or "").strip()
+    if not detector:
+        match = detect_key(key)
+        detector = match.detector if match else "generic"
+    return Finding(detector_name=detector, verified=False, raw=key)
+
+
+def build_bundle(
+    results: list[LadderResult],
+    consent,
+    tool_version: str,
+    now: float | None = None,
+) -> EvidenceBundle:
+    """Assemble an evidence bundle from ladder results."""
+    # The attestation holds unless a gated probe was actually exercised (a rung
+    # that ran, succeeded, and was not blocked).
+    state_changed = any(
+        rung.tier is ProbeTier.GATED and rung.success and not rung.blocked
+        for r in results
+        for rung in r.rungs
+    )
+    return EvidenceBundle(
+        authorized_scope=consent.authorized_scope or "",
+        tool_version=tool_version,
+        results=results,
+        created_at=time.time() if now is None else now,
+        no_state_changed=not state_changed,
+    )
+
+
+def render_ladder_text(result: LadderResult) -> str:
+    """Render a ladder result as a compact, human-readable block."""
+    lines = [
+        f"{_verdict_glyph(result.verdict)} {result.verdict.value}  {result.provider}  ({result.finding.redacted})"
+    ]
+    for rung in result.rungs:
+        mark = "[blocked]" if rung.blocked else ("ok" if rung.success else "-")
+        tier = " [gated]" if rung.tier is ProbeTier.GATED else ""
+        lines.append(f"    {mark} {rung.name}{tier} - {rung.detail}")
+    return "\n".join(lines)
+
+
+def render_bundle_markdown(bundle: EvidenceBundle) -> str:
+    """Render the full evidence bundle as Markdown (the human report)."""
+    pub = bundle.to_public()
+    out: list[str] = ["# vtx-recon evidence bundle", ""]
+    out.append(f"- **Tool:** {pub['tool']} v{pub['tool_version']}")
+    out.append(f"- **Authorized scope:** `{pub['authorized_scope'] or '(none)'}`")
+    out.append(f"- **Generated:** {pub['created_at_iso']}")
+    attestation = (
+        "No state was changed and no functionality was exercised beyond read-only probes."
+        if pub["no_state_changed_attestation"]
+        else "A gated probe was exercised under consent - see PROVEN findings below."
+    )
+    out.append(f"- **Attestation:** {attestation}")
+    out.append("")
+    for r in pub["results"]:  # type: ignore[assignment]
+        finding = r["finding"]
+        out.append(f"## {r['verdict']} - {r['provider']}")
+        out.append("")
+        out.append(
+            f"- **Credential:** `{finding['redacted']}` (detector: {finding['detector_name']})"
+        )
+        out.append(f"- **Verified by TruffleHog:** {finding['verified']}")
+        out.append("")
+        out.append("| Rung | Tier | Result | Detail |")
+        out.append("| :--- | :--- | :----- | :----- |")
+        for rung in r["rungs"]:
+            res = "blocked" if rung["blocked"] else ("ok" if rung["success"] else "-")
+            out.append(
+                f"| {rung['name']} | {rung['tier']} | {res} | {_escape_pipes(str(rung['detail']))} |"
+            )
+        out.append("")
+    out.append("---")
+    out.append("")
+    out.append(
+        "_Generated by vtx-recon for authorized security testing only. "
+        "Secrets are redacted. See TERMS.md._"
+    )
+    return "\n".join(out)
+
+
+def _verdict_glyph(v: Verdict) -> str:
+    return {Verdict.PROVEN: "[!]", Verdict.VALID: "[*]", Verdict.DENIED: "[x]"}.get(v, "[.]")
+
+
+def _escape_pipes(s: str) -> str:
+    return s.replace("|", "\\|")

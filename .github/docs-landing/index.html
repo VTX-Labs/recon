@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>vtx-recon — documentation</title>
+    <meta
+      name="description"
+      content="vtx-recon API documentation — secret intelligence for authorized engagements. Python and Node implementations."
+    />
+    <style>
+      :root {
+        --blue: #3182ce;
+        --blue-dark: #2b6cb0;
+        --bg: #0d0d0e;
+        --fg: #f4f4f5;
+        --muted: #a1a1aa;
+        --card: #18181b;
+        --border: #27272a;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        padding: 2rem 1rem;
+        background: radial-gradient(ellipse at top, #16161a, var(--bg));
+        color: var(--fg);
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        text-align: center;
+      }
+      pre {
+        margin: 0;
+        color: var(--blue);
+        font-size: clamp(0.35rem, 1.6vw, 0.7rem);
+        line-height: 1.1;
+        overflow-x: auto;
+        max-width: 100%;
+      }
+      h1 { margin: 0; font-size: 1.4rem; letter-spacing: -0.02em; }
+      p.tagline { margin: 0; color: var(--muted); max-width: 34rem; }
+      .cards { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
+      a.card {
+        display: block;
+        width: 14rem;
+        padding: 1.25rem 1.5rem;
+        border: 1px solid var(--border);
+        border-radius: 0.75rem;
+        background: var(--card);
+        color: var(--fg);
+        text-decoration: none;
+        transition: border-color 0.15s, transform 0.15s;
+      }
+      a.card:hover { border-color: var(--blue); transform: translateY(-2px); }
+      a.card .lang { font-size: 1.1rem; font-weight: 700; }
+      a.card .pkg { display: block; margin-top: 0.35rem; color: var(--blue); font-family: ui-monospace, monospace; font-size: 0.85rem; }
+      a.card .desc { display: block; margin-top: 0.5rem; color: var(--muted); font-size: 0.8rem; }
+      .links { color: var(--muted); font-size: 0.85rem; }
+      .links a { color: var(--blue); text-decoration: none; }
+      .links a:hover { text-decoration: underline; }
+      .warn {
+        max-width: 38rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid #7f1d1d;
+        border-radius: 0.5rem;
+        background: #1a0e0e;
+        color: #fca5a5;
+        font-size: 0.8rem;
+      }
+    </style>
+  </head>
+  <body>
+    <pre aria-hidden="true">
+██╗   ██╗████████╗██╗  ██╗  ██████╗ ███████╗ ██████╗ ██████╗ ███╗   ██╗
+██║   ██║╚══██╔══╝╚██╗██╔╝  ██╔══██╗██╔════╝██╔════╝██╔═══██╗████╗  ██║
+██║   ██║   ██║    ╚███╔╝   ██████╔╝█████╗  ██║     ██║   ██║██╔██╗ ██║
+╚██╗ ██╔╝   ██║    ██╔██╗   ██╔══██╗██╔══╝  ██║     ██║   ██║██║╚██╗██║
+ ╚████╔╝    ██║   ██╔╝ ██╗  ██║  ██║███████╗╚██████╗╚██████╔╝██║ ╚████║
+  ╚═══╝     ╚═╝   ╚═╝  ╚═╝  ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝</pre>
+
+    <div>
+      <h1>vtx-recon documentation</h1>
+      <p class="tagline">
+        Secret intelligence for authorized engagements — find a key, then prove
+        what it can actually do. Pick your language:
+      </p>
+    </div>
+
+    <div class="cards">
+      <a class="card" href="./node/">
+        <span class="lang">📦 Node / TypeScript</span>
+        <span class="pkg">@vtx-labs/recon</span>
+        <span class="desc">TypeDoc API reference for the npm package.</span>
+      </a>
+      <a class="card" href="./python/">
+        <span class="lang">🐍 Python</span>
+        <span class="pkg">vtx-recon</span>
+        <span class="desc">pdoc API reference for the PyPI package.</span>
+      </a>
+    </div>
+
+    <p class="warn">
+      ⚠️ Authorized use only. For security testing of systems you are explicitly
+      authorized to test. Unauthorized use may violate the CFAA, the UK Computer
+      Misuse Act, and equivalent laws.
+    </p>
+
+    <p class="links">
+      <a href="https://github.com/VTX-Labs/recon">GitHub</a> ·
+      <a href="https://vtxlabs.dev">VTX Labs</a> ·
+      <a href="https://www.npmjs.com/package/@vtx-labs/recon">npm</a> ·
+      <a href="https://pypi.org/project/vtx-recon/">PyPI</a>
+    </p>
+  </body>
+</html>

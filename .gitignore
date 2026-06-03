@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.python-version
+
+# Node
+node_modules/
+node/dist/
+*.tsbuildinfo
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Evidence bundles and scratch output — never commit engagement artifacts
+*.evidence.json
+*.evidence.md
+evidence/
+out/
+
+# Secrets / env — never commit
+.env
+.env.*
+*.pem
+*.key
+
+# Editor / OS
+.idea/
+.vscode/
+*.log
+.DS_Store
+Thumbs.db
+
+# generated docs
+node/docs/
+python/pydocs/
+site/

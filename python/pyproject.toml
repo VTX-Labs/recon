@@ -1,0 +1,87 @@
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[project]
+name = "vtx-recon"
+version = "0.2.0"
+description = "Authorized-use secret-intelligence suite: find -> verify -> capability ladder -> PROVEN/VALID/DENIED impact tiering -> court-ready evidence bundle. Built on top of TruffleHog."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "VTX Labs", email = "hello@vtxlabs.dev" }]
+keywords = [
+    "security",
+    "secret-scanning",
+    "bug-bounty",
+    "trufflehog",
+    "credential-verification",
+    "vtx-labs",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+]
+dependencies = [
+    # Async HTTP client used by every capability-ladder probe. No requests/boto3.
+    "httpx>=0.27",
+    # Provider ladder definitions / config parsing.
+    "pyyaml>=6.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/VTX-Labs/recon#readme"
+Repository = "https://github.com/VTX-Labs/recon"
+Issues = "https://github.com/VTX-Labs/recon/issues"
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.6",
+    "pytest>=8.0",
+    "respx>=0.21",
+    "pytest-asyncio>=0.23",
+]
+
+[project.scripts]
+vtx-recon = "vtx_recon.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/vtx_recon"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "C4",  # flake8-comprehensions
+    "RUF", # ruff-specific
+]
+ignore = [
+    "E501", # line length handled by formatter
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra"
+testpaths = ["tests"]
+asyncio_mode = "auto"
